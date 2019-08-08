@@ -108,25 +108,6 @@ int done;
 int screen_start_x;
 int screen_start_y;
 
-#ifdef DOS
-volatile int timer;
-int mytime = 0;
-
-void timer_callback()
-{
-	timer++;
-}
-END_OF_FUNCTION(timer_callback);
-
-void Waiter()
-{
-	do {
-		yield_timeslice();
-	} while(timer<mytime);
-	mytime = timer + time_delay;
-}
-
-#endif
 
 int EmptyMaze(int x, int y)
 {
@@ -518,16 +499,6 @@ int Init()
 	install_keyboard();
 	install_timer();
 	install_mouse();
-#ifdef DOS
-	if(Try(16, 640, 480)) {
-		screen_start_x = 160;
-		screen_start_y = 140;
-	} else	
-	if(Try(16, 320, 200)) {
-		screen_start_x = 0;
-		screen_start_y = 0;
-	} else
-#else	
 	if(Try(16, 320, 200)) {
 		screen_start_x = 0;
 		screen_start_y = 0;
@@ -536,7 +507,6 @@ int Init()
 		screen_start_x = 160;
 		screen_start_y = 140;
 	} else	
-#endif
 	if(Try(8, 320, 200)) {
 		screen_start_x = 0;
 		screen_start_y = 0;
@@ -549,11 +519,7 @@ int Init()
 	if(install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, 0)) {
 		cerr<<"No SFX :("<<endl;
 	}
-#ifdef DOS
-	mytime = 0;
-	LOCK_VARIABLE(timer);
-	install_int_ex(timer_callback, BPS_TO_TIMER(60));
-#endif
+
 	wavvolume = 255;
 	midivolume = 150;
 
@@ -897,9 +863,6 @@ int Run()
 			play_sample((SAMPLE *)data[steleport].dat, SNDVOL, 128, 1000, 0);
 			player.Place(); 
 			usleep(SLEEP_SWEAT_DREAMS);
-#ifdef DOS
-			Waiter();
-#endif			
 			teleport_energy = 0;
 			clear_keybuf();
 		}
@@ -952,9 +915,6 @@ int Run()
 		}
 		if(key[KEY_ASTERISK]) {
 			usleep(SLEEP_SWEAT_DREAMS);
-#ifdef DOS
-			Waiter();
-#endif			
 			clear_keybuf();
 			midigo = !midigo;
 			if(!midigo) { stop_midi(); }
@@ -963,27 +923,15 @@ int Run()
 		if((key[KEY_SPACE]) && (dynacount) && (!boomtime)) {
 			dynacount--;
 			usleep(SLEEP_SWEAT_DREAMS);
-#ifdef DOS
-			Waiter();
-#endif			
 			clear_keybuf();
 			Boom();
 			play_sample((SAMPLE *)data[sexplode].dat, SNDVOL, 128, 1000, 0);
 		}
 		
-#ifdef DOS
-		do {
-			yield_timeslice();
-			if(key[KEY_ESC]) Stop = 1;
-		} while(timer<mytime);
-
-		mytime = timer + time_delay;
-#else
 
 			
 		if(key[KEY_ESC]) { Stop = 1; }
 		usleep(SLEEP_SWEAT_DREAMS);
-#endif
 		
 	} while(!Stop);
 	
