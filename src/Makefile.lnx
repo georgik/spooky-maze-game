@@ -1,0 +1,56 @@
+.PHONY: all clean veryclean
+
+MODULES = \
+	main.o
+
+CC  = g++
+FLAGS = -DLINUX
+OUTPUT = ../spooky
+
+# -------- decide what compiler options to use --------
+#
+ifdef	WARNMODE
+	WFLAGS = -Wall -W -Werror -Wno-unused
+else
+	WFLAGS = 
+endif
+
+OFLAGS = -O2 -funroll-loops -ffast-math
+
+# OFLAGS+= -fno-strict-aliasing -fno-strength-reduce
+
+ifdef	DEBUGMODE
+	# -------- debugging build --------
+	CFLAGS	= -DDEBUGMODE=$(DEBUGMODE) $(WFLAGS) -g
+	SFLAGS	= -DDEBUGMODE=$(DEBUGMODE) $(WFLAGS)
+	LFLAGS += -g
+	LDFLAGS =  -lalleg
+else
+	#	--------	optimised build	--------
+	CFLAGS	= $(WFLAGS) $(OFLAGS)
+	SFLAGS	= $(WFLAGS)
+	LDFLAGS = `allegro-config --libs`
+	ifndef SYMBOLMODE
+	LFLAGS	+= -s
+	endif
+endif
+
+
+
+CFLAGS += -Iinclude
+
+
+all: $(OUTPUT)
+
+clean:
+	rm *.o
+
+veryclean: clean
+	rm $(OUTPUT)
+
+%.o: %.cc
+	$(CC) -c $< -o $@ $(FLAGS) $(LFLAGS) $(OFLAGS) $(CFLAGS)
+
+$(OUTPUT): $(OBJECTS) $(MODULES)
+	$(CC) $(MODULES) -o $(OUTPUT) $(FLAGS) $(LFALGS) $(LDFLAGS) $(SFLAGS)
+	strip $(OUTPUT)
