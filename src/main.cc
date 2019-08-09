@@ -620,7 +620,7 @@ void DrawScroll(BITMAP *bmp)
 		if(scroll[char_pointer] == '\\') { char_pointer = 0; }
 		xbuf[0] = scroll[char_pointer];
 		char_counter = text_length(myfont, xbuf) / 2 + 1; 
-		textprintf(mixer, myfont, scrx + 1, 0, WHITE, "%c", scroll[char_pointer]);
+		textprintf_ex(mixer, myfont, scrx + 1, 0, WHITE, -1, "%c", scroll[char_pointer]);
 	}
 	
 	blit(mixer, submixer, 2, 0, 0, 0, scrx - 2 + 50, 30);
@@ -819,10 +819,10 @@ void Game()
 	
 	masked_blit((BITMAP *)data[ivolume].dat, scr, 0, 0, 300 , 20, wavvolume / 15, 16);
 	
-	textprintf(scr, myfont, 20, 0, WHITE, "%d", visiblecount);
-	textprintf(scr, myfont, 20, 30, WHITE, "%d", teleport_energy / 10);
-	textprintf(scr, myfont, 20, 50, WHITE, "%d", walktime / 10);
-	textprintf(scr, myfont, 20, 70, WHITE, "%d", dynacount);
+	textprintf_ex(scr, myfont, 20, 0, WHITE, -1, "%d", visiblecount);
+	textprintf_ex(scr, myfont, 20, 30, WHITE, -1, "%d", teleport_energy / 10);
+	textprintf_ex(scr, myfont, 20, 50, WHITE, -1, "%d", walktime / 10);
+	textprintf_ex(scr, myfont, 20, 70, WHITE, -1, "%d", dynacount);
 	
 }
 
