@@ -57,7 +57,6 @@ using std::endl;
 #define EXPLODING_WALL	3
 #define EXPLODED_FLOOR	-1
 
-string	scroll;
 FONT	*myfont;
 
 BITMAP	*scr;
@@ -566,12 +565,6 @@ int Init()
 	
 	myfont = (FONT *)data[times24].dat;
 
-	buf = (char *)data[tscroll].dat;
-	
-	scroll = "       ";
-	scroll = buf;
-	scroll += "\\";
-
 	if(!myfont) { myfont = font; }
 	
 	bzero(xbuf, 3);
@@ -610,23 +603,6 @@ int Done()
 }
 
 
-
-void DrawScroll(BITMAP *bmp)
-{
-	char_counter--;
-
-	if(!char_counter) {
-		char_pointer++;
-		if(scroll[char_pointer] == '\\') { char_pointer = 0; }
-		xbuf[0] = scroll[char_pointer];
-		char_counter = text_length(myfont, xbuf) / 2 + 1; 
-		textprintf_ex(mixer, myfont, scrx + 1, 0, WHITE, -1, "%c", scroll[char_pointer]);
-	}
-	
-	blit(mixer, submixer, 2, 0, 0, 0, scrx - 2 + 50, 30);
-	blit(submixer, mixer, 0, 0, 0, 0, scrx + 50, 30);
-	masked_blit(mixer, bmp, 0, 0, 0, 170, scrx, 30);
-}
 
 int counter = 0;
 int i, sx, sy;
@@ -846,7 +822,6 @@ void Draw()
 	} else {
 		Game();
 	}
-	DrawScroll(scr);
 	blit(scr,screen,0,0,screen_start_x,screen_start_y,scrx,scry);		
 }
 
